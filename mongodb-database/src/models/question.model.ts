@@ -12,7 +12,7 @@ export interface IQuestion extends mongoose.Document {
 }
 
 // Mongoose Schema and Model
-const QuestionSchema = new mongoose.Schema({
+export const QuestionSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
