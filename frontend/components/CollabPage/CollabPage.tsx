@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import CodeEditor from "./CodeEditor";
 import { LANGUAGE } from "@/utils/enums";
+import SimpleSnackbar from "./RejectQuestionSnackBar";
 
 const CollabPage = () => {
     const { user } = useAuth();
@@ -34,6 +35,7 @@ const CollabPage = () => {
         useState<boolean>(false);
     const [showInterviewerView, setShowInterviewerView] = useState(false);
     const [showDialog, setShowDialog] = useState(true);
+    const [snackBarIsOpen, setSnackBarIsOpen] = useState(false);
 
     const toggleInterviewerView = () => {
         setShowInterviewerView(!showInterviewerView);
@@ -44,6 +46,22 @@ const CollabPage = () => {
     };
     const changeRole = () => {
         setInterviewer(!isInterviewer);
+        if (showInterviewerView) {
+            setShowInterviewerView(false);
+        }
+    };
+
+    const handleClosePickRole = (event: any, reason: string) => {
+        if (reason && reason == "backdropClick")
+            return; /* This prevents modal from closing on an external click */
+        
+        if (reason && reason == "escapeKeyDown") 
+            return; //prevent user from closing dialog using esacpe button
+        setShowDialog(false);
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackBarIsOpen(false);
     };
 
     const questionPanelProps = {
@@ -125,9 +143,10 @@ const CollabPage = () => {
         // Server tells clients this when a client in room has rejected next question prompt
         socket.on("dontProceedWithNextQuestion", () => {
             console.log("dontProceedWithNextQuestion");
+            setSnackBarIsOpen(true);
+            //alert("Proposal to move on to next question has been rejected.");
             setIsNextQnHandshakeOpen(false);
             setIHaveAcceptedNextQn(false);
-            alert("Proposal to move on to next question has been rejected.");
         });
 
         return () => {
@@ -209,7 +228,7 @@ const CollabPage = () => {
                     </div>
                 )}
             </div>
-            <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
+            <Dialog open={showDialog} onClose={handleClosePickRole} >
                 <DialogTitle>Pick a Role</DialogTitle>
                 <DialogContent>
                     {!isInterviewerChosen && (
@@ -242,6 +261,10 @@ const CollabPage = () => {
                     )}
                 </DialogContent>
             </Dialog>
+            <SimpleSnackbar
+                snackBarIsOpen={snackBarIsOpen}
+                onClose={handleSnackbarClose}
+            />
         </div>
     );
 };
