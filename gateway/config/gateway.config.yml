@@ -12,6 +12,8 @@ apiEndpoints:
             - "/api/login"
             - "/api/logout"
             - "/api/token-login"
+            - "/api/response"
+            - "/api/session/*"
     questionBank:
         host: "*"
         paths:
