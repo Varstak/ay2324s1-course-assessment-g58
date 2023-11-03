@@ -3,9 +3,11 @@ import userRouter from "./routes/users";
 import loginRouter from "./routes/login";
 import logoutRouter from "./routes/logout";
 import tokenRouter from "./routes/tokenLogin";
+import sessionRouter from "./routes/session";
+import responseRouter from "./routes/response";
 import { authenticate } from "./middleware/authorize";
 
-require('dotenv').config();
+require("dotenv").config();
 
 const app: Application = express();
 
@@ -20,6 +22,8 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
 
+app.use("/api/session", sessionRouter);
+app.use("/api/response", responseRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/logout", logoutRouter);
 app.use("/api/users", userRouter);
