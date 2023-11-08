@@ -26,6 +26,7 @@ router.post("/", async (req: Request, res: Response) => {
             res.status(401).json({ message: "Incorrect email or password" });
         }
     } catch (e) {
+        console.log(`An error has occurred: ${e}`)
         res.status(500).json({ message: `An error has occurred: ${e}` });
     }
 });
