@@ -1,6 +1,6 @@
 import express from 'express';
 import { json } from 'body-parser';
-import { createQuestion, getQuestions, deleteQuestionByObjectId, editQuestionById } from '../services/question.service';
+import { createQuestion, getQuestions, deleteQuestionByObjectId, editQuestionById, filterQuestionByCategory } from '../services/question.service';
 
 const router = express.Router();
 router.use(json());
@@ -87,5 +87,21 @@ router.put('/edit-question', async (req, res) => {
     }
 });
 
+router.get('/filter-questions', async (req, res) => {
+    try {
+        const category = req.body.category;
+        console.log('Filtering questions by category:', category);
+        const filteredQuestions = await filterQuestionByCategory(category);
+        if (filteredQuestions) {
+            console.log('Questions filtered!');
+            res.status(200).json(filteredQuestions);
+        } else {
+            console.log('Questions not found!');
+            res.status(404).json({ message: 'Questions not found' });
+        }
+    } catch (err: any) {
+        res.status(500).json({ message: "500 Internal Server Error" + err.message });
+    }
+});
 export { router as QuestionRouter };
 

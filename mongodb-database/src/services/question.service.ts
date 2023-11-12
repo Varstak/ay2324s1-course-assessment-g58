@@ -17,3 +17,7 @@ export async function deleteQuestionByObjectId(_id: string): Promise<IQuestion |
 export async function editQuestionById(id: string, updatedQuestion: Partial<IQuestion>): Promise<IQuestion | null> {
     return QuestionModel.findByIdAndUpdate(id, updatedQuestion);
 }
+
+export async function filterQuestionByCategory(category: string[]): Promise<IQuestion[]> {
+    return QuestionModel.find({ category: { $in: category } });
+}

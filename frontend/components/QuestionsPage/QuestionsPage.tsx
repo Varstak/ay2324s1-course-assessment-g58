@@ -68,32 +68,66 @@ const QuestionPage = () => {
         return response.status;
     };
 
-    useEffect(() => {
-        const fetchQuestions = async () => {
-            const fetchedQuestions = await fetchGet("/api/questions");
-            setQuestions(fetchedQuestions.data);
-        };
-        fetchQuestions();
-    }, [refresh]);
+    // Filter stuff
+    const [filterCategory, setFilterCategory] = useState<string[]>([]);
+    const [filterDifficulty, setFilterDifficulty] = useState<string[]>([]);
+    const [existingCategories, setExistingCategories] = useState<string[]>([]);
 
-    return (
-        <main>
-            <Header />
-            {admin && <QuestionForm addQuestion={addQuestion} />}
-            <QuestionTable
-                questions={questions}
-                deleteQuestion={deleteQuestion}
-                openModal={handleOpenModal}
-            />
-            {isModalOpen && (
-                <DescriptionModal
-                    question={selectedQuestion}
-                    closeModal={handleCloseModal}
-                    editQuestion={editQuestion}
-                />
-            )}
-        </main>
+    const handleFilterChange = (selectedCategories: string[]) => {
+        setFilterCategory(selectedCategories);
+    };
+
+    const handleDifficultyChange = (selectedDifficulties: string[]) => {
+        setFilterDifficulty(selectedDifficulties);
+    };
+
+    const initExistingCategories = Array.from(
+        new Set(questions.map((question) => question.category))
     );
+
+    const handleFilterApply = () => {
+        // Trigger the fetch operation with the current filters
+        setRefresh((prev) => !prev);
+        setExistingCategories(Array.from(new Set(questions.map((question) => question.category))));
+      };
+
+      useEffect(() => {
+        const fetchQuestions = async () => {
+          let fetchEndpoint = "/api/questions";
+      
+          if (filterCategory.length > 0) {
+            // If there are selected categories, use the filter endpoint
+            fetchEndpoint = `/api/questions/filter-questions?category=${filterCategory.join(',')}`;
+          } else {
+            // If there are no selected categories, use the normal endpoint
+            fetchEndpoint = "/api/questions";
+          }
+      
+          const fetchedQuestions = await fetchGet(fetchEndpoint);
+          setQuestions(fetchedQuestions.data);
+        };
+      
+        fetchQuestions();
+      }, [refresh, filterCategory]);
+
+      return (
+        <main>
+          <Header />
+          {admin && <QuestionForm addQuestion={addQuestion} />}
+          <QuestionTable
+            questions={questions}
+            deleteQuestion={deleteQuestion}
+            openModal={handleOpenModal}
+          />
+          {isModalOpen && (
+            <DescriptionModal
+              question={selectedQuestion}
+              closeModal={handleCloseModal}
+              editQuestion={editQuestion}
+            />
+          )}
+        </main>
+      );
 };
 
 export default QuestionPage;
